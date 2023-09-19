@@ -1,6 +1,6 @@
 package com.levelup.cardvalidatorbackend.models.dto;
 
-public class CardInfo {
+public class CardInformation {
     private Integer id;
 
     private String owner;
@@ -13,11 +13,7 @@ public class CardInfo {
 
     private Integer year;
 
-    public CardInfo() {
-        super();
-    }
-
-    public CardInfo(Integer id, String owner, String number, String cvv, Integer month, Integer year) {
+    public CardInformation(Integer id, String owner, String number, String cvv, Integer month, Integer year) {
         super();
         this.id = id;
         this.owner = owner;
@@ -25,6 +21,10 @@ public class CardInfo {
         this.cvv = cvv;
         this.month = month;
         this.year = year;
+    }
+
+    public CardInformation() {
+        super();
     }
 
     public Integer getId() {
@@ -57,6 +57,10 @@ public class CardInfo {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public Integer getMonth() {
+        return month;
     }
 
     public void setMonth(Integer month) {
