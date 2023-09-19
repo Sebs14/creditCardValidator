@@ -1,17 +1,29 @@
 package com.levelup.cardvalidatorbackend.models.entities;
 
-//@Entity(name = "credit_cards")
+import jakarta.persistence.*;
+
+@Entity(name = "cd_cards")
 public class Card {
+
+    @Id
+    @SequenceGenerator(name = "cd_cards_id_card_seq", sequenceName = "cd_cards_id_card_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cd_cards_id_card_seq")
+    @Column(name = "id_card")
     private Integer id;
 
+    @Column(name = "owner")
     private String owner;
 
+    @Column(name = "number")
     private String number;
 
+    @Column(name = "cvv")
     private String cvv;
 
+    @Column(name = "month")
     private Integer month;
 
+    @Column(name = "year")
     private Integer year;
 
     public Card() {
