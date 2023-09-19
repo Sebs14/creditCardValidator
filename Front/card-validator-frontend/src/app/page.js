@@ -1,113 +1,271 @@
-import Image from 'next/image'
+"use client";
+import CardComponent from "@/components/CardComponent";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [cardNumber, setCardNumber] = useState("**** **** **** ****");
+  const [cardOwner, setCardOwner] = useState("John Doe");
+  const [month, setMonth] = useState("MM");
+  const [year, setYear] = useState("YYYY");
+  const [cvc, setCvc] = useState("***");
+  const [isValid, setIsValid] = useState();
+  const [isValidTwo, setIsValidTwo] = useState(2);
+
+  const validateCard = async () => {
+    const response = await fetch("http://localhost:8080/cards/validate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        owner: cardOwner,
+        number: cardNumber,
+        month: month,
+        year: year,
+        cvv: cvc,
+      }),
+    });
+
+    if (response.status === 201) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isValid === true) {
+      setIsValidTwo(1);
+    } else {
+      setIsValidTwo(2)
+    }
+  }, [isValid]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="flex min-h-screen items-center justify-between p-24">
+      <form class="flex flex-wrap gap-3 w-[50%] p-5">
+        <label class="relative w-full flex flex-col">
+          <span class="font-bold mb-3">Card number</span>
+          <input
+            class={`rounded-md peer text-black pl-12 pr-2 py-2 border-2 border-gray-200 placeholder-gray-300`}
+            type="text"
+            name="card_number"
+            onChange={(e) => {
+              if (
+                e.target.value.length <= 18 &&
+                isNaN(e.target.value) === false
+              ) {
+                setCardNumber(e.target.value);
+              } else {
+                setCardNumber("**** **** **** ****");
+              }
+            }}
+            placeholder="0000 0000 0000"
+          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="absolute bottom-0 left-0 -mb-0.5 transform translate-x-1/2 -translate-y-1/2 text-black peer-placeholder-shown:text-gray-300 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
             />
-          </a>
+          </svg>
+        </label>
+
+        <label class="relative w-full flex flex-col">
+          <span class="font-bold mb-3">Owner</span>
+          <input
+            class="rounded-md peer text-black pl-12 pr-2 py-2 border-2 border-gray-200 placeholder-gray-300"
+            type="text"
+            name="card_owner"
+            placeholder="john doe"
+            onChange={(e) => {
+              if (e.target.value.length <= 26) {
+                setCardOwner(e.target.value);
+              } else {
+                setCardOwner("John Doe");
+              }
+            }}
+          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="absolute bottom-0 left-0 -mb-0.5 transform translate-x-1/2 -translate-y-1/2 text-black peer-placeholder-shown:text-gray-300 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+            />
+          </svg>
+        </label>
+
+        <div className="flex items-center gap-2">
+          <label class="relative flex-1 flex flex-col gap-2 ">
+            <span class="font-bold mb-3">Month</span>
+            <input
+              class="rounded-md text-black  w-[100%] peer pl-12 pr-2 py-2 border-2 border-gray-200 placeholder-gray-300"
+              type="text"
+              name="expire_date_month"
+              onChange={(e) => {
+                if (
+                  e.target.value.length <= 2 &&
+                  e.target.value >= 1 &&
+                  e.target.value <= 12 &&
+                  isNaN(e.target.value) === false
+                ) {
+                  setMonth(e.target.value);
+                } else {
+                  setMonth("MM");
+                }
+              }}
+              placeholder="MM"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="absolute bottom-0 left-0 -mb-0.5 transform translate-x-1/2 -translate-y-1/2 text-black peer-placeholder-shown:text-gray-300 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </label>
+          <label class="relative flex-1 flex flex-col gap-2 ">
+            <span class="font-bold mb-3">Year</span>
+            <input
+              class="rounded-md text-black  w-[100%] peer pl-12 pr-2 py-2 border-2 border-gray-200 placeholder-gray-300"
+              type="text"
+              name="expire_date_year"
+              onChange={(e) => {
+                if (
+                  e.target.value.length == 4 &&
+                  isNaN(e.target.value) === false
+                ) {
+                  setYear(e.target.value);
+                } else {
+                  setYear("YYYY");
+                }
+              }}
+              placeholder="YY"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="absolute bottom-0 left-0 -mb-0.5 transform translate-x-1/2 -translate-y-1/2 text-black peer-placeholder-shown:text-gray-300 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </label>
         </div>
-      </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+        <label class="relative flex-1 flex flex-col ">
+          <span class="font-bold flex items-center gap-3 mb-3">
+            CVC/CVV
+            <span class="relative group">
+              <span class="hidden group-hover:flex justify-center items-center px-2 py-1 text-xs absolute -right-2 transform translate-x-full -translate-y-1/2 w-max top-1/2 bg-black text-white">
+                {" "}
+                Hey ceci est une infobulle !
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </span>
+          </span>
+          <input
+            class="rounded-md peer text-black  pl-12 pr-2 py-2 border-2 border-gray-200 placeholder-gray-300"
+            type="text"
+            name="card_cvc"
+            placeholder="&bull;&bull;&bull;"
+            onChange={(e) => {
+              if (
+                e.target.value.length <= 4 &&
+                isNaN(e.target.value) === false
+              ) {
+                setCvc(e.target.value);
+              } else {
+                setCvc("***");
+              }
+            }}
+          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="absolute bottom-0 left-0 -mb-0.5 transform translate-x-1/2 -translate-y-1/2 text-black peer-placeholder-shown:text-gray-300 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+        </label>
+      </form>
+      <div className="flex flex-col gap-10">
+        {isValid === undefined ? (
+          <></>
+        ) : (
+          <>
+            {isValidTwo === 1 ? (
+              <div className="flex justify-center items-center font-4xl text-green-500 font-bold">
+                <h2>Valid card</h2>
+              </div>
+            ) : (
+              <div className="flex justify-center items-center font-4xl text-red-500 font-bold">
+                <h2>Invalid card</h2>
+              </div>
+            )}
+          </>
+        )}
+        <CardComponent
+          cardNumber={cardNumber}
+          owner={cardOwner}
+          month={month}
+          year={year}
+          cvv={cvc}
         />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={validateCard}
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+          Submit
+        </button>
       </div>
     </main>
-  )
+  );
 }
